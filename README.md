@@ -15,7 +15,6 @@ PHP project for university <br>
 
 <h3>customer pages</h3>
 
-```
 | Page                | Filename               | Description                                       |
 | ------------------- | ---------------------- | ------------------------------------------------- |
 | Register            | `register.php`         | Customer signup form.                             |
@@ -26,10 +25,9 @@ PHP project for university <br>
 | Orders              | `orders.php`           | Customer views order history.                     |
 | Currency Request    | `currency_request.php` | Submit new game currency requests.                |
 | Profile (optional)  | `profile.php`          | Edit user info, view past messages, etc.          |
-```
+
 <h3>Admin Pages</h3>
 
-```
 | Page               | Filename                 | Description                               |
 | ------------------ | ------------------------ | ----------------------------------------- |
 | Admin Dashboard    | `admin/dashboard.php`    | Admin overview: stats, recent sales, etc. |
@@ -41,7 +39,7 @@ PHP project for university <br>
 | Manage Messages    | `admin/messages.php`     | View feedback & partnership messages.     |
 | Manage Blog Posts  | `admin/blog.php`         | Create/edit/delete blog posts.            |
 | Add/Edit Blog Post | `admin/blog_form.php`    | Shared form.                              |
-```
+
 folder structure:
 ```
 /project-root
