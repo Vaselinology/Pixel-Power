@@ -2,7 +2,7 @@
 PHP project for university <br>
 <h3>public pages</h3>
 
-```
+
 | Page             | Filename               | Description                                                |
 | ---------------- | ---------------------- | ---------------------------------------------------------- |
 | Home / Main Page | `index.php`            | Show featured products, blog posts, banners, etc.          |
@@ -12,7 +12,7 @@ PHP project for university <br>
 | Contact Us       | `contact.php`          | Contact form for feedback/partnership.                     |
 | Blog             | `blog.php`             | View blog posts written by admins.                         |
 | View Blog Post   | `blog_post.php?id=...` | Full article page.                                         |
-```
+
 <h3>customer pages</h3>
 
 ```
