@@ -1,5 +1,5 @@
 # Pixel-Power
-PHP project for university
+PHP project for university <br>
 folder structure:
 ```
 /project-root
