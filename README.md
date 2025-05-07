@@ -1,6 +1,7 @@
 # Pixel-Power
 PHP project for university
 folder structure:
+```
 /project-root
 │
 ├── index.php
@@ -43,3 +44,4 @@ folder structure:
 │   └── /images
 │
 └── /uploads          ← Product & blog images
+```
