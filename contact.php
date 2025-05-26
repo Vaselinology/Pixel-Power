@@ -1,27 +1,68 @@
 <?php
-include 'db.php'; 
+include 'includes/db.php';
+session_start();
+
+$success_message = '';
+$error_message = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $firstName = trim($_POST["fn"]);
-    $lastName = trim($_POST["ln"]);
-    $email = trim($_POST["mail"]);
-    $message = trim($_POST["msg"]);
+    $firstName = trim($_POST["fn"] ?? '');
+    $lastName = trim($_POST["ln"] ?? '');
+    $email = trim($_POST["mail"] ?? '');
+    $message = trim($_POST["msg"] ?? '');
     $fullName = $firstName . ' ' . $lastName;
 
-    if (!empty($firstName) && !empty($lastName) && !empty($email) && !empty($message)) {
-        $stmt = $conn->prepare("INSERT INTO message (name, email, type, subject, content, date_sent) VALUES (?, ?, 'feedback', ?, ?, NOW())");
-        $subject = "Contact Form Feedback";
-        $stmt->bind_param("ssss", $fullName, $email, $subject, $message);
-
-        if ($stmt->execute()) {
-            echo "<script>alert('Your message has been sent successfully.');</script>";
-        } else {
-            echo "<script>alert('Failed to send your message.');</script>";
-        }
-
-        $stmt->close();
+    // Validation
+    if (empty($firstName) || empty($lastName) || empty($email) || empty($message)) {
+        $error_message = 'Please fill in all fields.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error_message = 'Please enter a valid email address.';
     } else {
-        echo "<script>alert('Please fill in all fields.');</script>";
+        try {
+            // Initialize customer_id as NULL
+            $customerId = null;
+            
+            // Step 1: Check if email exists in user table
+            $stmt = $conn->prepare("SELECT id FROM user WHERE email = ? LIMIT 1");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows > 0) {
+                $user = $result->fetch_assoc();
+                $userId = $user['id'];
+                
+                // Step 2: Check if user has a customer record
+                $stmt2 = $conn->prepare("SELECT id FROM customer WHERE user_id = ? LIMIT 1");
+                $stmt2->bind_param("i", $userId);
+                $stmt2->execute();
+                $customerResult = $stmt2->get_result();
+                
+                if ($customerResult->num_rows > 0) {
+                    $customer = $customerResult->fetch_assoc();
+                    $customerId = $customer['id'];
+                }
+                $stmt2->close();
+            }
+            $stmt->close();
+
+            // Insert the message
+            $stmt = $conn->prepare("INSERT INTO message (customer_id, name, email, type, subject, content, date_sent) 
+                                   VALUES (?, ?, ?, 'feedback', 'Contact Form', ?, NOW())");
+            $stmt->bind_param("isss", $customerId, $fullName, $email, $message);
+
+            if ($stmt->execute()) {
+                $success_message = 'Your message has been sent successfully!';
+                // Clear form
+                $firstName = $lastName = $email = $message = '';
+            } else {
+                $error_message = 'Failed to send message. Error: ' . $conn->error;
+            }
+            $stmt->close();
+        } catch (Exception $e) {
+            $error_message = 'Database error. Please try again later.';
+            error_log("Contact Form Error: " . $e->getMessage());
+        }
     }
 }
 ?>
@@ -30,33 +71,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>contact</title>
-</head>
-<body class="contact-page">
-  <?php include 'includes/header.php'; ?>
-      <div class="form-container">
-        <div class="form-content">
-          <h2>CONTACT US</h2>
-          <form>
-            <label for="fn">First name</label>
-            <input type="text" id="fn" name="fn" placeholder="Jane" >
-            <label for="ln">Last name</label>
-            <input type="text" id="ln" name="ln" placeholder="Smitherton" >
-            <label for="mail">Email address</label>
-            <input type="email" id="mail" name="mail" placeholder="email@janesfakedomain.net">
-            <label for="msg">Your message</label>
-            <textarea id="msg" name="msg" placeholder="Enter your question or message" cols="60" rows="10"></textarea>
-            <button type="submit">Submit</button>
-          </form>
-        </div>
-        <img src="images\contactpage\console.png" alt="Contact Illustration" class="contact-img">
-      </div>
-    <?php include 'includes/footer.php'; ?>
-</body>
-</html>
-
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+    <title>Contact Us</title>
+    <style>
+        /* Your existing styles plus these additions */
+         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 * { 
   margin: 0;
   padding: 0;
@@ -169,4 +187,79 @@ body {
     background-position: center;
     background-attachment: fixed;
   }
-</style>
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .alert-success {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+        .alert-error {
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body class="contact-page">
+    <?php include 'includes/header.php'; ?>
+    
+    <div class="form-container">
+        <div class="form-content">
+            <h2>CONTACT US</h2>
+            
+            <?php if ($success_message): ?>
+                <div class="alert alert-success"><?= htmlspecialchars($success_message) ?></div>
+            <?php endif; ?>
+            
+            <?php if ($error_message): ?>
+                <div class="alert alert-error"><?= htmlspecialchars($error_message) ?></div>
+            <?php endif; ?>
+            
+            <form method="POST" id="contactForm">
+                <div class="form-group">
+                    <label for="fn">First name</label>
+                    <input type="text" id="fn" name="fn" value="<?= htmlspecialchars($firstName ?? '') ?>" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ln">Last name</label>
+                    <input type="text" id="ln" name="ln" value="<?= htmlspecialchars($lastName ?? '') ?>" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mail">Email address</label>
+                    <input type="email" id="mail" name="mail" value="<?= htmlspecialchars($email ?? '') ?>" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="msg">Your message</label>
+                    <textarea id="msg" name="msg" required><?= htmlspecialchars($message ?? '') ?></textarea>
+                </div>
+                
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+        <img src="images/contactpage/console.jpg" alt="Contact Illustration" class="contact-img">
+    </div>
+    
+    <?php include 'includes/footer.php'; ?>
+    
+    <script>
+        // Client-side validation
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            const email = document.getElementById('mail').value;
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                alert('Please enter a valid email address');
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

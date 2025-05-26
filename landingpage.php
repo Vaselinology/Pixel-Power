@@ -12,7 +12,7 @@
   <?php include 'includes/header.php'; ?>
   
   <div class="container1">
-    <img src="images/Landingpage/container1.png" alt="Gaming banner image">
+    <img src="images\Landingpage\container1.jpg" alt="Gaming banner image">
     <div class="content">
       <h1>PIXEL <br><span>POWER</span></h1>
       <p>Unleash Your Gaming Potentials</p>
@@ -41,7 +41,7 @@
         </p>
       </div>
       <div class="image2">
-        <img src="images/Landingpage/container2.png" alt="Gaming products">
+        <img src="images\Landingpage\container2.jpg" alt="Gaming products">
       </div>
     </div>
   </div>
@@ -54,7 +54,7 @@
   
       <div class="images">
         <div class="image-item">
-          <img src="images/landingpage/blue.png" alt="gaming image">
+          <img src="images\Landingpage\blue.jpg" alt="gaming image">
           <h3>Figurines</h3>
           <p>Discover a variety of character <br>
             figurines from your favorite <br>
@@ -62,7 +62,7 @@
               doorstep.</p>
         </div>
         <div class="image-item">
-          <img src="images/landingpage/purple.png" alt="gaming image">
+          <img src="images\Landingpage\purple.jpg" alt="gaming image">
           <h3>Gaming <br>
             Equipment</h3>
           <p>Discover a vast array of goods,<br>
@@ -73,7 +73,7 @@
                 edge over the competition.</p>
         </div>
         <div class="image-item">
-          <img src="images/Landingpage/pink.png" alt="gaming image">
+          <img src="images\Landingpage\pink.jpg" alt="gaming image">
           <h3>Game Currency <br>and Passes</h3>
           <p>Elevate your gameplay and <br>
              access exclusive content with <br>
@@ -85,13 +85,13 @@
   </div>
 
   <div class="image3">
-    <img src="images/landingpage/container3.png" alt="Gaming products" class="background-image">
+    <img src="images\Landingpage\container3.jpg" alt="Gaming products" class="background-image">
     <div class="carousel-overlay">
       <div class="carousel-container">
         <div class="carousel">
-          <img src="images/landingpage/rev1.png" alt="Review 1" class="carousel-slide active">
-          <img src="images/landingpage/rev2.png" alt="Review 2" class="carousel-slide">
-          <img src="images/landingpage/rev3.png" alt="Review 3" class="carousel-slide">
+          <img src="images\Landingpage\rev1.jpg" alt="Review 1" class="carousel-slide active">
+          <img src="images\Landingpage\rev2.jpg" alt="Review 2" class="carousel-slide">
+          <img src="images\Landingpage\rev3.jpg" alt="Review 3" class="carousel-slide">
         </div>
         <button class="carousel-btn prev" onclick="moveSlide(-1)">&#10094;</button>
         <button class="carousel-btn next" onclick="moveSlide(1)">&#10095;</button>
@@ -111,10 +111,10 @@
           dominate the competition with our cutting-edge digital <br>
           solutions.
         </p>
-        <a href="signin.php"><button class="cta-button">Learn More</button></a>
+        <a href="shopping.php"><button class="cta-button">Learn More</button></a>
       </div>
       <div class="image4">
-        <img src="images/landingpage/container4.png" alt="Gaming products">
+        <img src="images\Landingpage\container4 (2).jpg" alt="Gaming products">
       </div>
     </div>
   </div>

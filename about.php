@@ -23,14 +23,14 @@
             got you covered.
           </p>
         </div>
-        <img class="about-img" src="images/contactpage/image.png" alt="About Pixel Power">
+        <img class="about-img" src="images\contactpage\image.jpg" alt="About Pixel Power">
       </div>
       
       <!-- TEAM SECTION -->
       <h1 class="team-title">OUR TEAM</h1>
       <div class="team-pictures">
-        <img src="images/contactpage/yasmine.png" alt="Yasmine">
-        <img src="images/contactpage/nour.png" alt="Nour">
+        <img src="images\contactpage\yasmine.jpg" alt="Yasmine">
+        <img src="images\contactpage\nour.jpg" alt="Nour">
       </div>
       <?php include 'includes/footer.php'; ?>
 </body>

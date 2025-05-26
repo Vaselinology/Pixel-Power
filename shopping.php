@@ -14,15 +14,15 @@
         <span>Pixel Power</span>
       </div>
       <nav class="nav-links">
-        <a href="#">Home</a>
-        <a href="#">About</a>
-        <a href="#">Products</a>
-        <a href="#">Contact</a>
+        <a href="landingpage.php">Home</a>
+        <a href="about.php">About</a>
+        <a href="products.php">Products</a>
+        <a href="contact.php">Contact</a>
       </nav>
     </header>
 
     <div class="hero">
-      <img src="images/shopping/Section 1.png" alt="Gaming banner image">
+      <img src="images\shopping page\header.jpg" alt="Gaming banner image">
       <div class="hero-text">
         <h1>SHOPPING <br><span>POWER</span></h1>
         <p>
@@ -36,7 +36,7 @@
   <div class="white-bg-container">
     <div class="container5">
         <div class="image-container5">
-            <img src="images/shopping/image1.png" alt="Blue gaming controller">
+            <img src="images\shopping page\bluemanette.jpg" alt="Blue gaming controller">
         </div>
         
         <div class="content5">
@@ -48,31 +48,31 @@
       <h4 class="minecraft-title small-title">Gaming accessories</h4>
       <div class="accessories-grid">
         <div class="accessory-card">
-          <img src="images/shopping/Image1.png" alt="Gaming Headset">
+          <img src="images\shopping page\stylich headphones.jpg" alt="Gaming Headset">
           <p>Stylish <br>Headphones</p>
         </div>
         <div class="accessory-card">
-       <a href="#"> <img src="images/shopping/laptop.png" alt="Gaming Laptops"></a>
+       <a href="#"> <img src="images\shopping page\gaming laptops.jpg" alt="Gaming Laptops"></a>
         <p>Gaming Laptops</p>
       </div>
   
       <div class="accessory-card">
-       <a href="#"> <img src="images/shopping/image 4.png" alt="Power Cords"></a>
+       <a href="#"> <img src="images\shopping page\versatile power cords.jpg" alt="Power Cords"></a>
         <p>Versatile Power Cords</p>
       </div>
   
       <div class="accessory-card">
-       <a href="#"> <img src="images/shopping/Image 5.png" alt="Consoles"></a>
+       <a href="#"> <img src="images\shopping page\consoles.jpg" alt="Consoles"></a>
         <p>Consoles</p>
       </div>
   
       <div class="accessory-card">
-        <a href=""><img src="images/shopping/Image 7.png" alt="Controllers"></a>
+        <a href=""><img src="images\shopping page\ergonomic controls.jpg" alt="Controllers"></a>
         <p>Ergonomic Controllers</p>
       </div>
   
       <div class="accessory-card">
-        <a href=""><img src="images/shopping/keyboard.png" alt="Keyboards"></a>
+        <a href=""><img src="images\shopping page\keyboards.jpg" alt="Keyboards"></a>
         <p>Keyboards</p>
       </div>  
     </section>
@@ -83,7 +83,7 @@
 
       <!-- First Block -->
       <div class="equipment-row">
-        <img src="images/shopping page/eq1.jpg" alt="Laptop" class="equipment-image">
+       <a href="products.php"> <img src="images\shopping page\eq1.jpg" alt="Laptop" class="equipment-image"></a>
 
         <div class="equipment-info">
           <h4 class="minecraft-title small-title">Powerful Rigs for Uncompromised Performance</h4>
@@ -94,10 +94,10 @@
             graphics, lightning-fast processing, and unrivaled <br>
             immersion
           </p>
-        <a href="Products.html"> <button class="minecraft-button">Shop Laptops</button></a>
+        <a href="Products.php"> <button class="minecraft-button">Shop Laptops</button></a>
         </div>
 
-        <img src="images/shopping page/eq2.jpg" alt="Tablet" class="equipment-image">
+        <a href="products.php"><img src="images\shopping page\eq2.jpg" alt="Tablet" class="equipment-image"></a>
       </div>
 
       <!-- Second Block -->
@@ -110,10 +110,10 @@
             seamless performance, stunning visuals, <br>
             and unparalleled convenience on the go
           </p>
-        <a href="Products.html"> <button class="minecraft-button">Discover Tablets</button></a>
+        <a href="Products.php"> <button class="minecraft-button">Discover Tablets</button></a>
         </div>
 
-        <img src="images/shopping page/eq3.jpg" alt="Accessories" class="equipment-image">
+       <a href="products.php"> <img src="images\shopping page\eq3.jpg" alt="Accessories" class="equipment-image"></a>
 
         <div class="equipment-info">
           <h4 class="minecraft-title small-title">Accessories</h4>
@@ -121,21 +121,21 @@
             Enhance your gaming experience with <br>
             our diverse range of high-quality accessories
           </p>
-        <a href="Products.html">  <button class="minecraft-button">Explore Accessories</button></a>
+        <a href="Products.php">  <button class="minecraft-button">Explore Accessories</button></a>
         </div>
       </div>
     </div>
 
     <div class="carousel-container">
         <div class="carousel">
-        <img src="images/shopping/slide1.png" alt="Fortnite">
-        <img src="images/shopping/slide2.png" alt="Fortnite 2">
-        <img src="images/shopping/slide3.png" alt="Roblox">
-        <img src="images/shopping/slide4.png" alt="Valorant">
-        <img src="images/shopping/slide5.png" alt="PC Games">
-        <img src="images/shopping/slide6.png" alt="Steam">
-        <img src="images/shopping/slide7.png" alt="Xbox Game Pass">
-        <img src="images/shopping/slide8.png" alt="Fortnite Yellow">
+        <img src="images\shopping page\fortnite.jpg" alt="Fortnite">
+        <img src="images\shopping page\fortnite2.jpg" alt="Fortnite 2">
+        <img src="images\shopping page\roblox.jpg" alt="Roblox">
+        <img src="images\shopping page\valorant.jpg" alt="Valorant">
+        <img src="images\shopping page\pc games.jpg" alt="PC Games">
+        <img src="images\shopping page\steam.jpg" alt="Steam">
+        <img src="images\shopping page\xbox game pass ultimate.jpg" alt="Xbox Game Pass">
+        <img src="images\shopping page\fortnite creaw yellow.jpg" alt="Fortnite Yellow">
         </div>
         <button class="carousel-btn prev" onclick="moveSlide(-1)">&#10094;</button>
         <button class="carousel-btn next" onclick="moveSlide(1)">&#10095;</button>
@@ -178,7 +178,7 @@
       <!-- Card 1 -->
       <div class="info-box offset-up">
         <div class="left-section">
-          <img class="top-img" src="images/shopping page/golden.jpg" alt="Golden">
+          <img class="top-img" src="images\shopping page\golden.jpg" alt="Golden">
           <div class="text-content">
             <h4 class="minecraft-title">CONTACT US</h4>
             <p>Do not hesitate to inquire or <br>
@@ -186,16 +186,16 @@
               is here to insure the best <br>
               experience
             </p>
-            <a href="contact.html"><button>Contact us</button></a>
+            <a href="contact.php"><button>Contact us</button></a>
           </div>
         </div>
-        <img class="side-img" src="images/shopping page/valise.jpg" alt="Valise">
+        <img class="side-img" src="images\shopping page\valise.jpg" alt="Valise">
       </div>
 
       <!-- Card 2 -->
       <div class="info-box offset-down">
         <div class="left-section">
-          <img class="top-img" src="images/shopping page/blue.jpg" alt="Blue">
+          <img class="top-img" src="images\shopping page\blue.jpg" alt="Blue">
           <div class="text-content">
             <h4 class="minecraft-title">PARTNER WITH US</h4>
             <p>Join forces with us and become a <br>
@@ -205,10 +205,10 @@
               exceptional gaming experiences <br>
               to our customers
             </p>
-          <a href="partnership.html"><button>Explore Partnership</button></a>
+          <a href="partnership.php"><button>Explore Partnership</button></a>
           </div>
         </div>
-        <img class="side-img" src="images/shopping page/manette.jpg" alt="Manette">
+        <img class="side-img" src="images\shopping page\manette.jpg" alt="Manette">
       </div>
     </div>
     <?php include 'includes/footer.php'; ?>
