@@ -2,65 +2,73 @@
 session_start();
 include('includes/db.php');
 
+$error = '';
+$success = '';
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = trim($_POST['name']);
     $email = trim($_POST['email']);
     $password = $_POST['password'];
     $confirmPassword = $_POST['confirm-password'];
-    $address = isset($_POST['address']) ? trim($_POST['address']) : null; // New address field
+    $address = isset($_POST['address']) ? trim($_POST['address']) : null;
 
     // Validate passwords match
     if ($password !== $confirmPassword) {
-        die("Passwords do not match.");
+        $error = "Passwords do not match.";
     }
 
     // Check if email exists
-    $check = $conn->prepare("SELECT id FROM User WHERE email = ?");
-    $check->bind_param("s", $email);
-    $check->execute();
-    $check->store_result();
+    if (empty($error)) {
+        $check = $conn->prepare("SELECT id FROM User WHERE email = ?");
+        $check->bind_param("s", $email);
+        $check->execute();
+        $check->store_result();
 
-    if ($check->num_rows > 0) {
-        die("This email is already registered.");
+        if ($check->num_rows > 0) {
+            $error = "This email is already registered.";
+        }
     }
 
-    // Hash password
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    // If no errors, proceed with registration
+    if (empty($error)) {
+        // Hash password
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-    // Begin transaction
-    $conn->begin_transaction();
+        // Begin transaction
+        $conn->begin_transaction();
 
-    try {
-        // Insert into User table
-        $stmt = $conn->prepare("INSERT INTO User (name, email, password) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $name, $email, $hashedPassword);
-        $stmt->execute();
-        $user_id = $stmt->insert_id;
+        try {
+            // Insert into User table
+            $stmt = $conn->prepare("INSERT INTO User (name, email, password) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $name, $email, $hashedPassword);
+            $stmt->execute();
+            $user_id = $stmt->insert_id;
 
-        // Get the next available ID for Customer table
-        $get_max_id = $conn->query("SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM Customer");
-        $next_id = $get_max_id->fetch_assoc()['next_id'];
+            // Get the next available ID for Customer table
+            $get_max_id = $conn->query("SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM Customer");
+            $next_id = $get_max_id->fetch_assoc()['next_id'];
 
-        // Insert into Customer table with explicit ID and address
-        $stmt_customer = $conn->prepare("INSERT INTO Customer (id, user_id, name, address, created_at) VALUES (?, ?, ?, ?, NOW())");
-        $stmt_customer->bind_param("iiss", $next_id, $user_id, $name, $address);
-        $stmt_customer->execute();
+            // Insert into Customer table with explicit ID and address
+            $stmt_customer = $conn->prepare("INSERT INTO Customer (id, user_id, name, address, created_at) VALUES (?, ?, ?, ?, NOW())");
+            $stmt_customer->bind_param("iiss", $next_id, $user_id, $name, $address);
+            $stmt_customer->execute();
 
-        // Commit transaction
-        $conn->commit();
+            // Commit transaction
+            $conn->commit();
 
-        // Set session variables
-        $_SESSION['user_id'] = $user_id;
-        $_SESSION['email'] = $email;
-        $_SESSION['name'] = $name;
+            // Set session variables
+            $_SESSION['user_id'] = $user_id;
+            $_SESSION['email'] = $email;
+            $_SESSION['name'] = $name;
 
-        // Redirect to profile
-        header("Location: userprofile.php");
-        exit();
+            // Redirect to profile
+            header("Location: userprofile.php");
+            exit();
 
-    } catch (Exception $e) {
-        $conn->rollback();
-        die("Registration failed: " . $e->getMessage());
+        } catch (Exception $e) {
+            $conn->rollback();
+            $error = "Registration failed: " . $e->getMessage();
+        }
     }
 }
 ?>
@@ -86,13 +94,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     background-color: #0f0f1a;
     color: #fff;
     height: 100vh;
-    overflow: hidden;
+   
   }
 
   .container {
     display: flex;
     height: 100vh;
-  }
+    max-width: 1400px; /* Add maximum width */
+    margin: 0 auto; /* Center the container */
+    width: 100%; /* Ensure it takes full width up to max-width */
+}
 
   /* Form Side */
   .form-container {
@@ -104,7 +115,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     position: relative;
     z-index: 2;
-  }
+    max-width: 600px; /* Add maximum width for the form */
+    margin: 0 auto; /* Center the form */
+    width: 100%; /* Ensure it takes full width up to max-width */
+}
 
   .form-container::before {
     content: '';
@@ -324,11 +338,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 
   /* Image Side */
-  .image-side {
+.image-side {
     flex: 1;
     position: relative;
     overflow: hidden;
-  }
+    max-height: 100vh; /* Prevent vertical overflow */
+}
 
   .image-side img {
     width: 100%;
@@ -397,6 +412,52 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   .image-side img {
     animation: float 6s ease-in-out infinite;
   }
+  /* Error and Success Messages */
+.error-message {
+    color: #ff4757;
+    background-color: rgba(255, 71, 87, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #ff4757;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.error-message i {
+    font-size: 1.2rem;
+}
+
+.success-message {
+    color: #2ed573;
+    background-color: rgba(46, 213, 115, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #2ed573;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.success-message i {
+    font-size: 1.2rem;
+}
+.validation-message {
+    font-size: 0.8rem;
+    margin-top: 5px;
+}
+
+.validation-message.match {
+    color: #2ed573;
+}
+
+.validation-message.no-match {
+    color: #ff4757;
+}
 </style>
 </head>
 <body>
@@ -406,10 +467,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <p class="subtitle">Join us today. It’s your journey. You shape it.</p>
 
       <form action="signup.php" method="POST">
+    <?php if (!empty($error)): ?>
+        <div class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            <?php echo htmlspecialchars($error); ?>
+        </div>
+    <?php endif; ?>
+    
+    <?php if (!empty($success)): ?>
+        <div class="success-message">
+            <i class="fas fa-check-circle"></i>
+            <?php echo htmlspecialchars($success); ?>
+        </div>
+    <?php endif; ?>
+    
     <div class="form-group">
         <label for="name">Full Name</label>
         <input type="text" id="name" name="name" required />
     </div>
+    
     <div class="form-group">
         <label for="email">Email Address</label>
         <input type="email" id="email" name="email" required />

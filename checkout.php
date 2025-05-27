@@ -387,6 +387,67 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && empty($stock_errors)) {
     .secure-checkout i {
       color: var(--success);
     }
+    /* Adjust Cart Button Styles */
+.adjust-cart-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.adjust-cart-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-3px);
+}
+
+/* For the general error message at the bottom */
+.error-message + .adjust-cart-btn {
+    margin-top: 1rem;
+    width: 100%;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(255, 71, 87, 0.1);
+    border-color: var(--danger);
+}
+/* Form Actions */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.back-to-cart-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  flex: 1;
+}
+
+.back-to-cart-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.checkout-btn {
+  flex: 2;
+}
   </style>
 </head>
 <body>
@@ -409,6 +470,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && empty($stock_errors)) {
                 <div class="error-message" style="color: var(--danger); margin-top: 0.5rem;">
                   <i class="fas fa-exclamation-circle"></i> <?= $stock_errors[$product_id] ?>
                 </div>
+                <a href="cart.php" class="adjust-cart-btn">
+                  <i class="fas fa-arrow-left"></i> Adjust Cart
+                </a>
               <?php endif; ?>
             </div>
           </div>
@@ -489,9 +553,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && empty($stock_errors)) {
           </div>
         </div>
 
-        <button type="submit" class="checkout-btn" <?= !empty($stock_errors) ? 'disabled' : '' ?>>
-          <i class="fas fa-lock"></i> Complete Order
-        </button>
+        <div class="form-actions">
+          <a href="cart.php" class="back-to-cart-btn">
+            <i class="fas fa-arrow-left"></i> Back to Cart
+          </a>
+          <button type="submit" class="checkout-btn" <?= !empty($stock_errors) ? 'disabled' : '' ?>>
+            <i class="fas fa-lock"></i> Complete Order
+          </button>
+        </div>
 
         <?php if (!empty($stock_errors)): ?>
           <div class="error-message" style="margin-top: 1rem;">

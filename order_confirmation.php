@@ -138,6 +138,57 @@ try {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(123, 44, 191, 0.3);
         }
+           .order-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2rem;
+        gap: 1rem;
+    }
+    
+    .cancel-form {
+        flex: 1;
+    }
+    
+    .cancel-btn {
+        width: 100%;
+        padding: 12px;
+        background: hsla(355, 100.00%, 63.90%, 0.10);
+        color: var(--danger);
+        border: 1px solid var(--danger);
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .cancel-btn:hover {
+        background: rgba(255, 71, 87, 0.2);
+    }
+    
+    .status-badge {
+        padding: 12px;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: 600;
+    }
+    
+    .status-badge.cancelled {
+        background: rgba(255, 71, 87, 0.1);
+        color: var(--danger);
+        border: 1px solid var(--danger);
+    }
+    .cancellation-policy {
+        background: rgba(31, 142, 241, 0.1);
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1.5rem 0;
+        border-left: 4px solid var(--primary);
+    }
+    
+    .cancellation-policy h3 {
+        margin-top: 0;
+        color: var(--primary);
+    }
     </style>
 </head>
 <body>
@@ -164,10 +215,33 @@ try {
                 </div>
             <?php endforeach; ?>
         </div>
+        <!-- Add this before the order actions -->
+<div class="cancellation-policy">
+    <h3><i class="fas fa-info-circle"></i> Cancellation Policy</h3>
+    <p>Orders can be cancelled within 24 hours of placement or before they are shipped. 
+       Refunds for cancelled orders will be processed within 3-5 business days.</p>
+</div>
+           <!-- Add this right after displaying the order items -->
+<div class="order-actions">
+    <?php if ($order['status'] === 'placed' || $order['status'] === 'confirmed'): ?>
+        <form method="POST" action="cancel_order.php" class="cancel-form">
+            <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
+            <button type="submit" class="cancel-btn" onclick="return confirm('Are you sure you want to cancel this order?')">
+                <i class="fas fa-times-circle"></i> Cancel Order
+            </button>
+        </form>
+    <?php elseif ($order['status'] === 'cancelled'): ?>
+        <div class="status-badge cancelled">
+            <i class="fas fa-ban"></i> Order Cancelled
+        </div>
+    <?php endif; ?>
+    
+    <a href="<?php echo dirname($_SERVER['PHP_SELF']) === '/' ? '' : dirname($_SERVER['PHP_SELF']); ?>/userprofile.php#orders" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to My Orders
+    </a>
+</div>
 
- <a href="<?php echo dirname($_SERVER['PHP_SELF']) === '/' ? '' : dirname($_SERVER['PHP_SELF']); ?>/userprofile.php#orders" class="back-btn">
-    <i class="fas fa-arrow-left"></i> Back to My Orders
-</a>
-    </div>
+ 
+   
 </body>
 </html>

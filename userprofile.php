@@ -8,7 +8,6 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once 'includes/db.php';
 
-
 // Get user info from database
 $userId = $_SESSION['user_id'];
 $stmt = $conn->prepare("SELECT id, name, email FROM user WHERE id = ?");
@@ -22,7 +21,7 @@ if (!$user) {
     exit();
 }
 
-// FIRST get the customer_id associated with this user
+// Get the customer_id associated with this user
 $customerId = null;
 $stmt = $conn->prepare("SELECT id FROM customer WHERE user_id = ?");
 $stmt->bind_param("i", $userId);
@@ -33,9 +32,6 @@ if ($customerResult->num_rows > 0) {
     $customerRow = $customerResult->fetch_assoc();
     $customerId = $customerRow['id'];
 }
-
-// Debug output
-error_log("User ID: $userId | Customer ID: " . ($customerId ?? 'NULL'));
 
 // Get recent orders - only if we have a customer_id
 $recentOrders = [];
@@ -57,13 +53,9 @@ if ($customerId !== null) {
         $orderResult = $orderStmt->get_result();
         $recentOrders = $orderResult->fetch_all(MYSQLI_ASSOC);
         
-        error_log("Found " . count($recentOrders) . " orders for customer $customerId");
-        
     } catch (Exception $e) {
         error_log("Order query error: " . $e->getMessage());
     }
-} else {
-    error_log("No customer record found for user $userId - cannot fetch orders");
 }
 
 // Set default values
@@ -293,9 +285,24 @@ $user['game_stats'] = [
             font-weight: 600;
         }
 
-        .status-completed {
-            background: rgba(46, 204, 113, 0.2);
-            color: #2ecc71;
+        .status-placed {
+            background: rgba(255, 165, 0, 0.2);
+            color: #ffa500;
+        }
+
+        .status-confirmed {
+            background: rgba(0, 191, 255, 0.2);
+            color: #00bfff;
+        }
+
+        .status-cancelled {
+            background: rgba(255, 71, 87, 0.2);
+            color: #ff4757;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 0.5rem;
         }
 
         .action-btn {
@@ -335,7 +342,34 @@ $user['game_stats'] = [
             text-decoration: underline;
         }
 
-        /* Responsive Design */
+        .no-orders-message {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--text-lighter);
+        }
+
+        .browse-btn {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .browse-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .error-text {
+            color: var(--danger);
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
         @media (max-width: 768px) {
             .profile-grid {
                 grid-template-columns: 1fr;
@@ -349,44 +383,46 @@ $user['game_stats'] = [
                 display: block;
                 overflow-x: auto;
             }
+            
+            .order-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
         }
-       
     </style>
 </head>
 <body>
     <?php include 'includes/header.php'; ?>
     
     <div class="profile-wrapper">
-      <div class="profile-header">
-    <div class="avatar-container">
-        <?php
-        $avatarDir = 'images/';
-        $avatarFiles = ['avatar1.jpg', 'avatar2.jpg', 'avatar3.jpg', 'avatar4.jpg'];
-        
-        // Filter to only existing files
-        $availableAvatars = array_filter($avatarFiles, function($file) use ($avatarDir) {
-            return file_exists($avatarDir . $file);
-        });
-        
-        // Fallback if none found
-        if (empty($availableAvatars)) {
-            $availableAvatars = ['default-avatar.jpg'];
-        }
-        
-        $selectedAvatar = $avatarDir . $availableAvatars[array_rand($availableAvatars)];
-        ?>
-        
-        <img src="<?= $selectedAvatar ?>" alt="Profile Avatar" class="avatar"
-             onerror="this.src='images/default-avatar.jpg'">
-        
-        <div class="edit-avatar" title="Change Avatar">
-            <i class="fas fa-camera"></i>
+        <div class="profile-header">
+            <div class="avatar-container">
+                <?php
+                $avatarDir = 'images/';
+                $avatarFiles = ['avatar1.jpg', 'avatar2.jpg', 'avatar3.jpg', 'avatar4.jpg'];
+                
+                $availableAvatars = array_filter($avatarFiles, function($file) use ($avatarDir) {
+                    return file_exists($avatarDir . $file);
+                });
+                
+                if (empty($availableAvatars)) {
+                    $availableAvatars = ['default-avatar.jpg'];
+                }
+                
+                $selectedAvatar = $avatarDir . $availableAvatars[array_rand($availableAvatars)];
+                ?>
+                
+                <img src="<?= $selectedAvatar ?>" alt="Profile Avatar" class="avatar"
+                     onerror="this.src='images/default-avatar.jpg'">
+                
+                <div class="edit-avatar" title="Change Avatar">
+                    <i class="fas fa-camera"></i>
+                </div>
+            </div>
+            
+            <h1 class="username"><?= htmlspecialchars($user['name']) ?></h1>
+            <div class="member-since">Member since <?= $user['join_date'] ?></div>
         </div>
-    </div>
-    
-    <h1 class="username"><?= htmlspecialchars($user['name']) ?></h1>
-    <div class="member-since">Member since <?= $user['join_date'] ?></div>
-</div>
         
         <div class="profile-grid">
             <div class="left-column">
@@ -445,60 +481,67 @@ $user['game_stats'] = [
                 </div>
             </div>
             
-              <div class="right-column">
-            <div id="orders-section"></div>
-            <div class="profile-card">
-                <div class="card-header">
-                    <h2 class="card-title">Recent Orders</h2>
-                    <a href="orders.php" class="view-all">View All</a>
+            <div class="right-column">
+                <div class="profile-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Orders</h2>
+                        <a href="orders.php" class="view-all">View All</a>
+                    </div>
+                    
+                    <?php if (!empty($recentOrders)): ?>
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Date</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($recentOrders as $order): ?>
+                                <tr>
+                                    <td class="order-id">#<?= htmlspecialchars($order['id']) ?></td>
+                                    <td><?= date('M d, Y', strtotime($order['date'])) ?></td>
+                                    <td>$<?= number_format($order['total'], 2) ?></td>
+                                    <td>
+                                        <span class="order-status status-<?= strtolower($order['status']) ?>">
+                                            <?= htmlspecialchars($order['status']) ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="order-actions">
+                                           
+                                            <?php if ($order['status'] === 'placed' || $order['status'] === 'confirmed'): ?>
+                                                <form method="POST" action="cancel_order.php" style="display: inline;">
+                                                    <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
+                                                    <button type="submit" class="edit-btn" onclick="return confirm('Cancel this order?')">
+                                                        <i class="fas fa-times"></i> Cancel
+                                                    </button>
+                                                </form>
+                                            <?php endif; ?>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php else: ?>
+                        <div class="no-orders-message">
+                            <i class="fas fa-shopping-bag"></i>
+                            <p>No orders found</p>
+                            <?php if ($conn->error): ?>
+                                <p class="error-text">(Database error: <?= htmlspecialchars($conn->error) ?>)</p>
+                            <?php endif; ?>
+                            <a href="products.php" class="browse-btn">
+                                <i class="fas fa-store"></i> Browse Products
+                            </a>
+                        </div>
+                    <?php endif; ?>
                 </div>
                 
-                <?php if (!empty($recentOrders)): ?>
-                    <table class="orders-table">
-                        <thead>
-                            <tr>
-                                <th>Order #</th>
-                                <th>Date</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($recentOrders as $order): ?>
-                            <tr>
-                                <td class="order-id">#<?= htmlspecialchars($order['id']) ?></td>
-                                <td><?= date('M d, Y', strtotime($order['date'])) ?></td>
-                                <td>$<?= number_format($order['total'], 2) ?></td>
-                                <td>
-                                    <span class="order-status status-<?= strtolower($order['status']) ?>">
-                                        <?= htmlspecialchars($order['status']) ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <a href="order_details.php?id=<?= $order['id'] ?>" class="edit-btn">
-                                        <i class="fas fa-eye"></i> View
-                                    </a>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                <?php else: ?>
-                    <div class="no-orders-message">
-                        <i class="fas fa-shopping-bag"></i>
-                        <p>No orders found</p>
-                        <?php if ($conn->error): ?>
-                            <p class="error-text">(Database error: <?= htmlspecialchars($conn->error) ?>)</p>
-                        <?php endif; ?>
-                        <a href="products.php" class="browse-btn">
-                            <i class="fas fa-store"></i> Browse Products
-                        </a>
-                    </div>
-                <?php endif; ?>
-            </div>
-                
-                         <div class="profile-card" style="margin-top: 2rem;">
+                <div class="profile-card" style="margin-top: 2rem;">
                     <div class="card-header">
                         <h2 class="card-title">Wishlist</h2>
                         <a href="wishlist.php" class="view-all">View All</a>
@@ -518,7 +561,6 @@ $user['game_stats'] = [
     
     <?php include 'includes/footer.php'; ?>
     <script>
-        // Simple animation for stat cards on page load
         document.addEventListener('DOMContentLoaded', function() {
             const statCards = document.querySelectorAll('.stat-card');
             statCards.forEach((card, index) => {
